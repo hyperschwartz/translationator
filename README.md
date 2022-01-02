@@ -13,6 +13,17 @@ go install translationator
 To run the app, just run:
 ```shell
 translationator "google-translate-api-key" "Target phrase" "Optional # of iterations"
-# Ex:
-translationator "lolfakeapikeyblahblahblah" "Hello, I am writing words in English" 20
 ```
+
+Sample run:
+```shell
+> translationator "lolfakeapikeyblahblahblah" "Hello, I am writing words in English" 10
+INFO[0002] Translationated: I write greetings in English
+```
+
+TODO:
+- Large iteration runs tend to reveal some weird issue that returns 400s.  Perhaps the Google api cannot translate certain
+  languages to different ones.  Further investigation required.
+- The CLI aspect of the app sucks pretty bad, probably could use some tweaks to make it more user friendly with better
+  "help" examples and such.
+- Perhaps support JSON file configurations.  Maybe integrate with viper for this?
