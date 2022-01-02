@@ -5,18 +5,18 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"strconv"
-	"translationator/internal/translate"
+	"translationator/internal/translations"
 )
 
 var RootCmd = &cobra.Command{
 	Use:   "translationator",
 	Short: "Translationator",
-	Long: `This application will translate a given phrase in the English
+	Long: `This application will translations a given phrase in the English
 language into many other languages, and then back into English.
 This will result in some zany output!`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 2 {
-			log.Panic("Expected at least two arguments as input!")
+			log.Fatal("Expected at least two arguments as input!")
 		}
 		apiKey := args[0]
 		textToTranslationate := args[1]
@@ -24,20 +24,21 @@ This will result in some zany output!`,
 		if len(args) > 2 {
 			it, err := strconv.Atoi(args[2])
 			if err != nil {
-				log.Panic("Unexpected input for iterations:", err)
+				log.Fatal("Unexpected input for iterations:", err)
 			}
 			iterations = it
 		} else {
 			iterations = 10
 		}
-		if iterations < 0 || iterations > 10 {
-			log.Panic("Max iterations allowed: 10. Iterations provided:", iterations)
+		if iterations < 0 || iterations > 25 {
+			log.Fatal("Max iterations allowed: 25. Iterations provided:", iterations)
 		}
-		translate.Translationate(translate.TranslationateRequest{
+		resp := translations.Translationate(translations.TranslationateRequest{
 			ApiKey:     apiKey,
 			Text:       textToTranslationate,
 			Iterations: iterations,
 		})
+		log.Info("Translationated: ", resp.TranslationatedText)
 	},
 }
 

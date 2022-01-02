@@ -1,14 +1,13 @@
-package translate
+package translations
 
 import (
+	"cloud.google.com/go/translate"
+	"context"
 	log "github.com/siruspen/logrus"
-	"io"
-	"io/ioutil"
+	"golang.org/x/text/language"
+	"google.golang.org/api/option"
 	"math/rand"
-	"net/http"
-	"translationator/internal/configs"
-	"translationator/internal/helper"
-	"translationator/internal/translate/languages"
+	"translationator/internal/translations/languages"
 )
 
 type TranslationateRequest struct {
@@ -25,21 +24,21 @@ type TranslationateResponse struct {
 type TranslationRequest struct {
 	ApiKey          string
 	Text            string
-	CurrentLanguage languages.LanguageCode
-	TargetLanguage  languages.LanguageCode
+	CurrentLanguage language.Tag
+	TargetLanguage  language.Tag
 }
 
 type TranslationResponse struct {
 	OriginalText        string
 	TranslatedText      string
-	OriginalLanguage    languages.LanguageCode
-	TranslationLanguage languages.LanguageCode
+	OriginalLanguage    language.Tag
+	TranslationLanguage language.Tag
 }
 
 func Translationate(request TranslationateRequest) TranslationateResponse {
-	executedLanguages := make([]languages.LanguageCode, request.Iterations)
+	executedLanguages := make([]language.Tag, request.Iterations)
 	remainingLanguages := languages.RandomizerLanguageCodes
-	currentLanguage := languages.English
+	currentLanguage := language.English
 	currentText := request.Text
 	for i := 0; i < request.Iterations-1; i++ {
 		nextLanguage := remainingLanguages[rand.Intn(len(remainingLanguages))]
@@ -51,8 +50,8 @@ func Translationate(request TranslationateRequest) TranslationateResponse {
 			TargetLanguage:  nextLanguage,
 		})
 		currentLanguage = nextLanguage
-		remainingLanguages = languages.FilterLanguageCodes(remainingLanguages, func(code languages.LanguageCode) bool {
-			return helper.ArrayContains(executedLanguages, code)
+		remainingLanguages = languages.FilterLanguageCodes(remainingLanguages, func(code language.Tag) bool {
+			return languages.LanguageCodeInArray(remainingLanguages, code)
 		})
 		currentText = translateResponse.TranslatedText
 	}
@@ -60,7 +59,7 @@ func Translationate(request TranslationateRequest) TranslationateResponse {
 		ApiKey:          request.ApiKey,
 		Text:            currentText,
 		CurrentLanguage: currentLanguage,
-		TargetLanguage:  languages.English,
+		TargetLanguage:  language.English,
 	})
 	return TranslationateResponse{
 		OriginalText:        request.Text,
@@ -69,32 +68,29 @@ func Translationate(request TranslationateRequest) TranslationateResponse {
 }
 
 func TranslateTextTo(request TranslationRequest) TranslationResponse {
-	httpRequest, err := http.NewRequest("GET", configs.RapidapiUrl, nil)
+	ctx := context.Background()
+	client, err := translate.NewClient(ctx, option.WithAPIKey(request.ApiKey))
 	if err != nil {
-		log.Panic("Failed to properly format request")
+		log.Fatal("Could not create cloud client: ", err)
 	}
-	queryParams := httpRequest.URL.Query()
-	queryParams.Add(configs.RapidapiTextParam, request.Text)
-	queryParams.Add(configs.RapidapiToParam, string(request.TargetLanguage))
-	queryParams.Add(configs.RapidapiFromParam, string(request.CurrentLanguage))
-	httpRequest.URL.RawQuery = queryParams.Encode()
-	httpRequest.Header.Add(configs.RapidapiHostHeader, configs.RapidapiHostValue)
-	httpRequest.Header.Add(configs.RapidapiKeyHeader, request.ApiKey)
-	response, err := http.DefaultClient.Do(httpRequest)
+	translations, err := client.Translate(
+		ctx,
+		[]string{request.Text},
+		request.TargetLanguage,
+		&translate.Options{
+			Source: request.CurrentLanguage,
+			Format: translate.Text,
+		},
+	)
 	if err != nil {
-		log.Panic("Failed to translate text and received error:", err)
+		log.Fatal("Translation failed to succeed: ", err)
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Error("Failed to defer closure of request body:", err)
-		}
-	}(response.Body)
-	body, _ := ioutil.ReadAll(response.Body)
-	log.Info(string(body))
+	if len(translations) <= 0 {
+		log.Fatal("Resulting translations was somehow empty!")
+	}
 	return TranslationResponse{
 		OriginalText:        request.Text,
-		TranslatedText:      "idk",
+		TranslatedText:      translations[0].Text,
 		OriginalLanguage:    request.CurrentLanguage,
 		TranslationLanguage: request.TargetLanguage,
 	}
