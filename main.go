@@ -10,8 +10,9 @@ func main() {
 	configs.ConfigureApp()
 	//translationator.Execute()
 	translate.TranslateTextTo(translate.TranslationRequest{
-		Text:            "Example",
+		ApiKey:          "insert-rapidapi-key-here",
+		Text:            "Hello",
 		CurrentLanguage: languages.English,
-		TargetLanguage:  languages.Japanese,
+		TargetLanguage:  languages.Spanish,
 	})
 }
