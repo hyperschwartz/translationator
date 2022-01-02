@@ -1,0 +1,5 @@
+package translationator
+
+func main() {
+
+}
