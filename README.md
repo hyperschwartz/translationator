@@ -27,3 +27,5 @@ TODO:
 - The CLI aspect of the app sucks pretty bad, probably could use some tweaks to make it more user friendly with better
   "help" examples and such.
 - Perhaps support JSON file configurations.  Maybe integrate with viper for this?
+- Probably just ditch logrus and go with `fmt` commands.  This is CLI so the logging looks uglier than standard io.
+- The code needs comments lol.  Haven't done this because this first iteration is undoubtedly UGLY and needs refactors.
