@@ -1,7 +1,12 @@
 package configs
 
-import "os"
+import (
+	log "github.com/siruspen/logrus"
+	"os"
+)
 
 func ConfigureGlobalTime() {
-	os.Setenv("TZ", "UTC")
+	if err := os.Setenv("TZ", "UTC"); err != nil {
+		log.Error("Failed to alter timezone to UTC:", err)
+	}
 }
