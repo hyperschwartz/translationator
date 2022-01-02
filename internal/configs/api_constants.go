@@ -1,9 +1,14 @@
 package configs
 
 // Headers
-var RapidapiHostHeader = "x-rapidapi-host"
-var RapidapiKeyHeader = "x-rapidapi-key"
+const RapidapiHostHeader = "x-rapidapi-host"
+const RapidapiKeyHeader = "x-rapidapi-key"
 
 // Values
-var RapidapiUrl = "https://nlp-translation.p.rapidapi.com/v1/translate"
-var RapidapiHostValue = "nlp-translation.p.rapidapi.com"
+const RapidapiUrl = "https://nlp-translation.p.rapidapi.com/v1/translate"
+const RapidapiHostValue = "nlp-translation.p.rapidapi.com"
+
+// Params
+const RapidapiTextParam = "text"
+const RapidapiToParam = "to"
+const RapidapiFromParam = "from"

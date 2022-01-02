@@ -74,12 +74,12 @@ func TranslateTextTo(request TranslationRequest) TranslationResponse {
 		log.Panic("Failed to properly format request")
 	}
 	queryParams := httpRequest.URL.Query()
-	queryParams.Add("text", request.Text)
-	queryParams.Add("to", string(request.TargetLanguage))
-	queryParams.Add("from", string(request.CurrentLanguage))
+	queryParams.Add(configs.RapidapiTextParam, request.Text)
+	queryParams.Add(configs.RapidapiToParam, string(request.TargetLanguage))
+	queryParams.Add(configs.RapidapiFromParam, string(request.CurrentLanguage))
 	httpRequest.URL.RawQuery = queryParams.Encode()
-	httpRequest.Header.Add("x-rapidapi-host", "nlp-translation.p.rapidapi.com")
-	httpRequest.Header.Add("x-rapidapi-key", request.ApiKey)
+	httpRequest.Header.Add(configs.RapidapiHostHeader, configs.RapidapiHostValue)
+	httpRequest.Header.Add(configs.RapidapiKeyHeader, request.ApiKey)
 	response, err := http.DefaultClient.Do(httpRequest)
 	if err != nil {
 		log.Panic("Failed to translate text and received error:", err)
