@@ -5,14 +5,15 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"strconv"
-	"translationator/internal/translations"
+	"translationator/internal/translib"
+	"translationator/internal/translib/transmodels"
 )
 
 var RootCmd = &cobra.Command{
 	Use:   "translationator",
 	Short: "Translationator",
-	Long: `This application will translations a given phrase in the English
-language into many other languages, and then back into English.
+	Long: `This application will translib a given phrase in the English
+language into many other langlib, and then back into English.
 This will result in some zany output!`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 2 {
@@ -31,14 +32,14 @@ This will result in some zany output!`,
 			iterations = 10
 		}
 		if iterations < 0 || iterations > 25 {
-			log.Fatal("Max iterations allowed: 25. Iterations provided:", iterations)
+			log.Fatal("Max iterations allowed: 25. iterations provided:", iterations)
 		}
-		resp := translations.Translationate(translations.TranslationateRequest{
-			ApiKey:     apiKey,
-			Text:       textToTranslationate,
-			Iterations: iterations,
-		})
-		log.Info("Translationated: ", resp.TranslationatedText)
+		translationateRequest, err := transmodels.NewTranslationateRequest(apiKey, textToTranslationate, iterations)
+		if err != nil {
+			log.Fatal("Failed to create a translationate request: ", err)
+		}
+		resp := translib.Translationate(translationateRequest)
+		log.Info("Translationated: ", resp.GetTranslationatedText())
 	},
 }
 
