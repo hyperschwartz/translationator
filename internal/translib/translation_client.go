@@ -4,10 +4,10 @@ import (
 	"cloud.google.com/go/translate"
 	"context"
 	"errors"
-	log "github.com/siruspen/logrus"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 	"math/rand"
+	"translationator/internal/helper"
 	"translationator/internal/translib/langlib"
 	"translationator/internal/translib/transmodels"
 )
@@ -38,7 +38,7 @@ func Translationate(request transmodels.TranslationateRequest) transmodels.Trans
 	ctx := context.Background()
 	client, err := translate.NewClient(ctx, option.WithAPIKey(request.GetApiKey()))
 	if err != nil {
-		log.Fatal("Failed to contstruct Google Translate client: ", err)
+		helper.PrintAndExit("Failed to contstruct Google Translate client: %v", err)
 	}
 	executedLanguages := make([]language.Tag, request.GetIterations())
 	remainingLanguages := langlib.RandomizerLanguageCodes
@@ -49,7 +49,7 @@ func Translationate(request transmodels.TranslationateRequest) transmodels.Trans
 		executedLanguages = append(executedLanguages, nextLanguage)
 		transClientReq, err := transmodels.NewTranslationClientRequest(*client, ctx, currentText, currentLanguage, nextLanguage)
 		if err != nil {
-			log.Fatal("Failed to construct translation client request: ", err)
+			helper.PrintAndExit("Failed to construct translation client request: %v", err)
 		}
 		translateResponse, err := translateTextTo(transClientReq)
 		if err != nil {
@@ -63,7 +63,7 @@ func Translationate(request transmodels.TranslationateRequest) transmodels.Trans
 	}
 	finalRequest, err := transmodels.NewTranslationClientRequest(*client, ctx, currentText, currentLanguage, language.English)
 	if err != nil {
-		log.Fatal("Failed to make final re-translation to English: ", err)
+		helper.PrintAndExit("Failed to make final re-translation to English: %v", err)
 	}
 	finalResponse, err := translateTextTo(finalRequest)
 	if err != nil {
@@ -73,5 +73,5 @@ func Translationate(request transmodels.TranslationateRequest) transmodels.Trans
 }
 
 func failTranslation(currentLanguage language.Tag, targetLanguage language.Tag, err error) {
-	log.Fatal("Failed to translate language ["+currentLanguage.String()+"] to ["+targetLanguage.String()+"]: ", err)
+	helper.PrintAndExit("Failed to translate language [%s] to [%s]: %v", currentLanguage.String(), targetLanguage.String(), err)
 }

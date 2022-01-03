@@ -1,11 +1,12 @@
 package translationator
 
 import (
-	log "github.com/siruspen/logrus"
+	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 	"strconv"
+	"translationator/internal/helper"
 	"translationator/internal/translib"
+	"translationator/internal/translib/langlib"
 	"translationator/internal/translib/transmodels"
 )
 
@@ -15,9 +16,9 @@ var RootCmd = &cobra.Command{
 	Long: `This application will translib a given phrase in the English
 language into many other langlib, and then back into English.
 This will result in some zany output!`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
-			log.Fatal("Expected at least two arguments as input!")
+			helper.PrintAndExit("Expected at least two arguments as input!")
 		}
 		apiKey := args[0]
 		textToTranslationate := args[1]
@@ -25,27 +26,28 @@ This will result in some zany output!`,
 		if len(args) > 2 {
 			it, err := strconv.Atoi(args[2])
 			if err != nil {
-				log.Fatal("Unexpected input for iterations:", err)
+				helper.PrintAndExit("Expected input for iterations: %v", err)
 			}
 			iterations = it
 		} else {
 			iterations = 10
 		}
-		if iterations < 0 || iterations > 25 {
-			log.Fatal("Max iterations allowed: 25. iterations provided:", iterations)
+		maxIterations := len(langlib.RandomizerLanguageCodes)
+		if iterations < 0 || iterations > maxIterations {
+			helper.PrintAndExit("Max iterations allowed: %d. iterations provided: %d", maxIterations, iterations)
 		}
 		translationateRequest, err := transmodels.NewTranslationateRequest(apiKey, textToTranslationate, iterations)
 		if err != nil {
-			log.Fatal("Failed to create a translationate request: ", err)
+			helper.PrintAndExit("Failed to create a translationate request: %v", err)
 		}
 		resp := translib.Translationate(translationateRequest)
-		log.Info("Translationated: ", resp.GetTranslationatedText())
+		fmt.Println(resp.GetTranslationatedText())
+		return nil
 	},
 }
 
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
-		log.Error(err)
-		os.Exit(-1)
+		helper.PrintAndExit("Execution failed: %v", err)
 	}
 }
