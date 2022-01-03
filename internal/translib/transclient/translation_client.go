@@ -1,4 +1,4 @@
-package translib
+package transclient
 
 import (
 	"cloud.google.com/go/translate"
@@ -37,18 +37,20 @@ func Translationate(request transmodels.TranslationateRequest) (transmodels.Tran
 	ctx := context.Background()
 	client, err := translate.NewClient(ctx, option.WithAPIKey(request.GetApiKey()))
 	if err != nil {
-		return transmodels.EmptyTranslationateResponse(), helper.FmtErr("Failed to contstruct Google Translate client: %v", err)
+		return transmodels.EmptyTranslationateResponse(), helper.FmtErr("Failed to contstruct Google Translate transclient: %v", err)
 	}
+	request.PrintIfVerbose("Successfully established Google Translate Client")
 	executedLanguages := make([]language.Tag, request.GetIterations())
 	remainingLanguages := langlib.RandomizerLanguageCodes
 	currentLanguage := language.English
 	currentText := request.GetText()
+	request.FmtIfVerbose("Initial Text: [%s]", currentText)
 	for i := 0; i < request.GetIterations(); i++ {
 		nextLanguage := remainingLanguages[rand.Intn(len(remainingLanguages))]
 		executedLanguages = append(executedLanguages, nextLanguage)
 		transClientReq, err := transmodels.NewTranslationClientRequest(client, ctx, currentText, currentLanguage, nextLanguage)
 		if err != nil {
-			return transmodels.EmptyTranslationateResponse(), helper.FmtErr("failed to construct translation client request: %v", err)
+			return transmodels.EmptyTranslationateResponse(), helper.FmtErr("failed to construct translation transclient request: %v", err)
 		}
 		translateResponse, err := translateTextTo(transClientReq)
 		if err != nil {
@@ -59,6 +61,7 @@ func Translationate(request transmodels.TranslationateRequest) (transmodels.Tran
 			return !langlib.LanguageCodeInArray(executedLanguages, code)
 		})
 		currentText = translateResponse.GetTranslatedText()
+		request.FmtIfVerbose("Iteration [%d], Language: [%s], Result: [%s]", i+1, currentLanguage.String(), currentText)
 	}
 	finalRequest, err := transmodels.NewTranslationClientRequest(client, ctx, currentText, currentLanguage, language.English)
 	if err != nil {
