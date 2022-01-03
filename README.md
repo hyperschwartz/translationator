@@ -33,8 +33,3 @@ Sample run:
 > translationator -t "Hello, I am writing words in English"
 I write greetings in English
 ```
-
-## Developer Notes
-
-TODO:
-- The code needs comments lol.  Haven't done this because this first iteration is undoubtedly UGLY and needs refactors.

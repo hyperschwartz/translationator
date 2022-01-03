@@ -1,6 +1,7 @@
 package translationator
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"google.golang.org/api/option"
@@ -37,7 +38,7 @@ This will result in some zany output!`,
 		} else if filePath == defaultFilePath {
 			homeDir, err := os.UserHomeDir()
 			if err != nil {
-				helper.PrintAndExit("Failed to resolve user home directory: %v", err)
+				return helper.FmtErr("failed to resolve user home directory: %v", err)
 			}
 			clientOption = option.WithCredentialsFile(fmt.Sprintf("%s/translationator/%s", homeDir, translationCredJson))
 			// Otherwise, attempt to find a credentials file at a provided file path
@@ -45,19 +46,19 @@ This will result in some zany output!`,
 			clientOption = option.WithCredentialsFile(filePath)
 		}
 		if len(textToTranslationate) == 0 {
-			helper.PrintAndExit("Please enter a valid text to Translationate")
+			return errors.New("please enter a valid text to Translationate")
 		}
 		maxIterations := len(langlib.RandomizerLanguageCodes)
 		if iterations <= 0 || iterations > maxIterations {
-			helper.PrintAndExit("Invalid iteration amount provided: %d. Please use a number greater than zero and less than the maximum value of %d", iterations, maxIterations)
+			return helper.FmtErr("invalid iteration amount provided: %d. please use a number greater than zero and less than the maximum value of %d", iterations, maxIterations)
 		}
 		translationateRequest, err := transmodels.NewTranslationateRequest(clientOption, textToTranslationate, iterations, verbose)
 		if err != nil {
-			helper.PrintAndExit("Failed to create a translationate request: %v", err)
+			return helper.FmtErr("failed to create a translationate request: %v", err)
 		}
 		resp, err := transclient.Translationate(translationateRequest)
 		if err != nil {
-			helper.PrintAndExit("Error occurred during translationate: %v", err)
+			return helper.FmtErr("error occurred during translationate: %v", err)
 		}
 		fmt.Println(resp.GetTranslationatedText())
 		return nil
@@ -65,12 +66,14 @@ This will result in some zany output!`,
 }
 
 func Execute() {
+	// Establish all flag definitions on the RootCmd before executing it
 	RootCmd.PersistentFlags().StringVarP(&apiKey, "apikey", "a", defaultApiKey, "The google cloud apikey. Alternative to translation-credentials.json")
 	RootCmd.PersistentFlags().StringVarP(&filePath, "filepath", "p", defaultFilePath, "The location of your Google Translate credential JSON")
 	RootCmd.PersistentFlags().StringVarP(&textToTranslationate, "text", "t", "Time for a Translationator run!", "The text to Translationate")
 	RootCmd.PersistentFlags().IntVarP(&iterations, "iterations", "i", 10, "The amount of iterations to run")
 	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Displays active information about execution, including each translation made")
+	// Run the app, and blow up if any error is found
 	if err := RootCmd.Execute(); err != nil {
-		helper.PrintAndExit("Execution failed: %v", err)
+		os.Exit(1)
 	}
 }

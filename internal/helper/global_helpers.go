@@ -3,14 +3,10 @@ package helper
 import (
 	"errors"
 	"fmt"
-	"os"
 )
 
-func PrintAndExit(format string, a ...interface{}) {
-	fmt.Println(fmt.Sprintf("FATAL ERROR: "+format, a...))
-	os.Exit(1)
-}
-
+// FmtErr Helps in using fmt.Sprintf to format the values contained within an error.  Just a little shortcut for ease
+// of use.
 func FmtErr(format string, a ...interface{}) error {
 	return errors.New(fmt.Sprintf(format, a...))
 }
