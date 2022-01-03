@@ -25,7 +25,7 @@ translationator "google-translate-api-key" "Target phrase" "Optional # of iterat
 Sample run:
 ```shell
 > translationator "lolfakeapikeyblahblahblah" "Hello, I am writing words in English" 10
-INFO[0002] Translationated: I write greetings in English
+I write greetings in English
 ```
 
 ## Developer Notes

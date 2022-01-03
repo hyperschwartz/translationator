@@ -44,7 +44,7 @@ func Translationate(request transmodels.TranslationateRequest) transmodels.Trans
 	remainingLanguages := langlib.RandomizerLanguageCodes
 	currentLanguage := language.English
 	currentText := request.GetText()
-	for i := 0; i < request.GetIterations()-1; i++ {
+	for i := 0; i < request.GetIterations(); i++ {
 		nextLanguage := remainingLanguages[rand.Intn(len(remainingLanguages))]
 		executedLanguages = append(executedLanguages, nextLanguage)
 		transClientReq, err := transmodels.NewTranslationClientRequest(*client, ctx, currentText, currentLanguage, nextLanguage)
