@@ -3,19 +3,20 @@ package transmodels
 import (
 	"errors"
 	"fmt"
+	"google.golang.org/api/option"
 	"strconv"
 	"translationator/internal/helper"
 	"translationator/internal/translib/langlib"
 )
 
 type TranslationateRequest struct {
-	apiKey     string
-	text       string
-	iterations int
-	verbose    bool
+	clientOption option.ClientOption
+	text         string
+	iterations   int
+	verbose      bool
 }
 
-func NewTranslationateRequest(apiKey string, text string, iterations int, verbose bool) (TranslationateRequest, error) {
+func NewTranslationateRequest(clientOption option.ClientOption, text string, iterations int, verbose bool) (TranslationateRequest, error) {
 	if iterations < 1 {
 		return EmptyTranslationateRequest(), errors.New("Must specify iteration amount of at least 1. Value specified: " + strconv.Itoa(iterations))
 	}
@@ -23,11 +24,11 @@ func NewTranslationateRequest(apiKey string, text string, iterations int, verbos
 	if iterations > maxIterations {
 		return EmptyTranslationateRequest(), helper.FmtErr("There are only [%d] total iterations possible", maxIterations)
 	}
-	return TranslationateRequest{apiKey: apiKey, text: text, iterations: iterations, verbose: verbose}, nil
+	return TranslationateRequest{clientOption: clientOption, text: text, iterations: iterations, verbose: verbose}, nil
 }
 
-func (t TranslationateRequest) GetApiKey() string {
-	return t.apiKey
+func (t TranslationateRequest) GetClientOption() option.ClientOption {
+	return t.clientOption
 }
 
 func (t TranslationateRequest) GetText() string {

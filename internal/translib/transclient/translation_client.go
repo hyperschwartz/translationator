@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"golang.org/x/text/language"
-	"google.golang.org/api/option"
 	"math/rand"
 	"translationator/internal/helper"
 	"translationator/internal/translib/langlib"
@@ -35,19 +34,17 @@ func translateTextTo(request transmodels.TranslationClientRequest) (transmodels.
 func Translationate(request transmodels.TranslationateRequest) (transmodels.TranslationateResponse, error) {
 	// Before running anything, contruct a Google Translate Client. This speeds up the multiple requests
 	ctx := context.Background()
-	client, err := translate.NewClient(ctx, option.WithAPIKey(request.GetApiKey()))
+	client, err := translate.NewClient(ctx, request.GetClientOption())
 	if err != nil {
 		return transmodels.EmptyTranslationateResponse(), helper.FmtErr("Failed to contstruct Google Translate transclient: %v", err)
 	}
 	request.PrintIfVerbose("Successfully established Google Translate Client")
-	executedLanguages := make([]language.Tag, request.GetIterations())
 	remainingLanguages := langlib.RandomizerLanguageCodes
 	currentLanguage := language.English
 	currentText := request.GetText()
 	request.FmtIfVerbose("Initial Text: [%s]", currentText)
 	for i := 0; i < request.GetIterations(); i++ {
 		nextLanguage := remainingLanguages[rand.Intn(len(remainingLanguages))]
-		executedLanguages = append(executedLanguages, nextLanguage)
 		transClientReq, err := transmodels.NewTranslationClientRequest(client, ctx, currentText, currentLanguage, nextLanguage)
 		if err != nil {
 			return transmodels.EmptyTranslationateResponse(), helper.FmtErr("failed to construct translation transclient request: %v", err)
@@ -57,8 +54,9 @@ func Translationate(request transmodels.TranslationateRequest) (transmodels.Tran
 			return failTranslation(currentLanguage, nextLanguage, err)
 		}
 		currentLanguage = nextLanguage
+		// Remove the target language from the remaining languages array, ensuring languages are only used once
 		remainingLanguages = langlib.FilterLanguageCodes(remainingLanguages, func(code language.Tag) bool {
-			return !langlib.LanguageCodeInArray(executedLanguages, code)
+			return code != currentLanguage
 		})
 		currentText = translateResponse.GetTranslatedText()
 		request.FmtIfVerbose("Iteration [%d], Language: [%s], Result: [%s]", i+1, currentLanguage.String(), currentText)

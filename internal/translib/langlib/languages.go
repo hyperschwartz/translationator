@@ -131,15 +131,6 @@ func FilterLanguageCodes(array []language.Tag, filterFn func(language.Tag) bool)
 	return result
 }
 
-func LanguageCodeInArray(array []language.Tag, code language.Tag) bool {
-	for i := 0; i < len(array); i++ {
-		if array[i] == code {
-			return true
-		}
-	}
-	return false
-}
-
 func parseAllValidLanguages() (validLanguages []language.Tag) {
 	for _, code := range validLanguageCodes {
 		tag, err := language.Parse(code)

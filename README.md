@@ -6,7 +6,8 @@ something totally crazy.
 
 ## Prerequisites
 - Install Golang on your computer.  This comes in various shapes and forms based on your OS.
-- Register with Google Cloud Console (https://console.cloud.google.com/) to get yourself a translation API key.
+- Register with Google Cloud Console (https://console.cloud.google.com/) to get yourself a translation API key or 
+  service account JSON file (the JSON file is preferred for ease of use).
 
 ## Installation
 To install (run from translationator root directory):
@@ -17,19 +18,23 @@ go install translationator
 
 ## Running the dang thing
 
-To run the app, just run:
+To run the app with a JSON file in the default directory (~/translationator/translation-credentials.json), just run:
 ```shell
-translationator "google-translate-api-key" "Target phrase" "Optional # of iterations"
+translationator -t "Target phrase"
+```
+
+To run the app with an API key via Google Cloud, just run:
+```shell
+translationator -a myApiKeyFromGoogleCloud -t "Target phrase"
 ```
 
 Sample run:
 ```shell
-> translationator "lolfakeapikeyblahblahblah" "Hello, I am writing words in English" 10
+> translationator -t "Hello, I am writing words in English"
 I write greetings in English
 ```
 
 ## Developer Notes
 
 TODO:
-- Perhaps support JSON file configurations.  Maybe integrate with viper for this?
 - The code needs comments lol.  Haven't done this because this first iteration is undoubtedly UGLY and needs refactors.
