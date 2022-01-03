@@ -3,6 +3,7 @@ package transmodels
 import (
 	"errors"
 	"strconv"
+	"translationator/internal/helper"
 	"translationator/internal/translib/langlib"
 )
 
@@ -14,11 +15,11 @@ type TranslationateRequest struct {
 
 func NewTranslationateRequest(apiKey string, text string, iterations int) (TranslationateRequest, error) {
 	if iterations < 1 {
-		return TranslationateRequest{}, errors.New("Must specify iteration amount of at least 1. Value specified: " + strconv.Itoa(iterations))
+		return EmptyTranslationateRequest(), errors.New("Must specify iteration amount of at least 1. Value specified: " + strconv.Itoa(iterations))
 	}
 	maxIterations := len(langlib.RandomizerLanguageCodes)
 	if iterations > maxIterations {
-		return TranslationateRequest{}, errors.New("There are only [" + strconv.Itoa(maxIterations) + "] total iterations possible")
+		return EmptyTranslationateRequest(), helper.FmtErr("There are only [%d] total iterations possible", maxIterations)
 	}
 	return TranslationateRequest{apiKey: apiKey, text: text, iterations: iterations}, nil
 }
@@ -33,4 +34,8 @@ func (t TranslationateRequest) GetText() string {
 
 func (t TranslationateRequest) GetIterations() int {
 	return t.iterations
+}
+
+func EmptyTranslationateRequest() TranslationateRequest {
+	return TranslationateRequest{}
 }

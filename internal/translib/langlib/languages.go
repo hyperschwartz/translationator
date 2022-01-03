@@ -5,6 +5,9 @@ import (
 	"golang.org/x/text/language"
 )
 
+var AllValidLanguages = parseAllValidLanguages()
+var RandomizerLanguageCodes = FilterLanguageCodes(AllValidLanguages, func(code language.Tag) bool { return code != language.English })
+
 // validLanguageCodes Derived via: https://cloud.google.com/translate/docs/languages
 // Each code contained in this list will be accepted via the Google Translate api, and will allow many subsequent
 // requests to be made without fail.
@@ -119,21 +122,6 @@ var validLanguageCodes = []string{
 	"zu",
 }
 
-var AllValidLanguages = parseAllValidLanguages()
-
-func parseAllValidLanguages() (validLanguages []language.Tag) {
-	for _, code := range validLanguageCodes {
-		tag, err := language.Parse(code)
-		if err != nil {
-			fmt.Printf("Invalid language code provided: %s. Please remove it. Error: %v", code, err)
-		}
-		validLanguages = append(validLanguages, tag)
-	}
-	return validLanguages
-}
-
-var RandomizerLanguageCodes = FilterLanguageCodes(AllValidLanguages, func(code language.Tag) bool { return code != language.English })
-
 func FilterLanguageCodes(array []language.Tag, filterFn func(language.Tag) bool) (result []language.Tag) {
 	for _, val := range array {
 		if filterFn(val) {
@@ -150,4 +138,15 @@ func LanguageCodeInArray(array []language.Tag, code language.Tag) bool {
 		}
 	}
 	return false
+}
+
+func parseAllValidLanguages() (validLanguages []language.Tag) {
+	for _, code := range validLanguageCodes {
+		tag, err := language.Parse(code)
+		if err != nil {
+			fmt.Printf("Invalid language code provided: %s. Please remove it. Error: %v", code, err)
+		}
+		validLanguages = append(validLanguages, tag)
+	}
+	return validLanguages
 }

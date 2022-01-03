@@ -16,3 +16,7 @@ func (t TranslationateResponse) GetOriginalText() string {
 func (t TranslationateResponse) GetTranslationatedText() string {
 	return t.translationatedText
 }
+
+func EmptyTranslationateResponse() TranslationateResponse {
+	return TranslationateResponse{}
+}

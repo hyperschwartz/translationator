@@ -38,7 +38,10 @@ This will result in some zany output!`,
 		if err != nil {
 			helper.PrintAndExit("Failed to create a translationate request: %v", err)
 		}
-		resp := translib.Translationate(translationateRequest)
+		resp, err := translib.Translationate(translationateRequest)
+		if err != nil {
+			helper.PrintAndExit("Error occurred during translationate: %v", err)
+		}
 		fmt.Println(resp.GetTranslationatedText())
 		return nil
 	},

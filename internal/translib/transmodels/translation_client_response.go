@@ -33,3 +33,7 @@ func (t TranslationClientResponse) GetOriginalLanguage() language.Tag {
 func (t TranslationClientResponse) GetTranslationLanguage() language.Tag {
 	return t.translationLanguage
 }
+
+func EmptyTranslationClientResponse() TranslationClientResponse {
+	return TranslationClientResponse{}
+}

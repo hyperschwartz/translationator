@@ -3,12 +3,12 @@ package transmodels
 import (
 	"cloud.google.com/go/translate"
 	"context"
-	"errors"
 	"golang.org/x/text/language"
+	"translationator/internal/helper"
 )
 
 type TranslationClientRequest struct {
-	client          translate.Client
+	client          *translate.Client
 	ctx             context.Context
 	text            string
 	currentLanguage language.Tag
@@ -16,19 +16,17 @@ type TranslationClientRequest struct {
 }
 
 func NewTranslationClientRequest(
-	client translate.Client,
+	client *translate.Client,
 	ctx context.Context,
 	text string,
 	currentLanguage language.Tag,
 	targetLanguage language.Tag,
 ) (TranslationClientRequest, error) {
 	if currentLanguage == targetLanguage {
-		return TranslationClientRequest{}, errors.New(
-			"Invalid request. Current language [" +
-				currentLanguage.String() +
-				"] must differ from target language [" +
-				targetLanguage.String() +
-				"]",
+		return EmptyTranslationClientRequest(), helper.FmtErr(
+			"Invalid request. Current language [%s] must differ from target language [%s]",
+			currentLanguage.String(),
+			targetLanguage.String(),
 		)
 	}
 	return TranslationClientRequest{
@@ -40,7 +38,7 @@ func NewTranslationClientRequest(
 	}, nil
 }
 
-func (t TranslationClientRequest) GetGoogleClient() translate.Client {
+func (t TranslationClientRequest) GetGoogleClient() *translate.Client {
 	return t.client
 }
 
@@ -58,4 +56,8 @@ func (t TranslationClientRequest) GetCurrentLanguage() language.Tag {
 
 func (t TranslationClientRequest) GetTargetLanguage() language.Tag {
 	return t.targetLanguage
+}
+
+func EmptyTranslationClientRequest() TranslationClientRequest {
+	return TranslationClientRequest{}
 }
