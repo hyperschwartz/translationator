@@ -4,11 +4,18 @@ This app takes an English sentence (or a paragraph or whatever you're feeling), 
 English into a bunch of other languages, and then back to English.  The goal is to convert a normal sentence into 
 something totally crazy.  
 
+## Prerequisites
+- Install Golang on your computer.  This comes in various shapes and forms based on your OS.
+- Register with Google Cloud Console (https://console.cloud.google.com/) to get yourself a translation API key.
+
+## Installation
 To install (run from translationator root directory):
 
 ```shell
 go install translationator
 ```
+
+## Running the dang thing
 
 To run the app, just run:
 ```shell
@@ -21,9 +28,9 @@ Sample run:
 INFO[0002] Translationated: I write greetings in English
 ```
 
+## Developer Notes
+
 TODO:
-- Large iteration runs tend to reveal some weird issue that returns 400s.  Perhaps the Google api cannot translate certain
-  languages to different ones.  Further investigation required.
 - The CLI aspect of the app sucks pretty bad, probably could use some tweaks to make it more user friendly with better
   "help" examples and such.
 - Perhaps support JSON file configurations.  Maybe integrate with viper for this?
