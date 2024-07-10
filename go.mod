@@ -1,4 +1,4 @@
-module github.com/hyperschwartz/translationator/v4
+module github.com/hyperschwartz/translationator
 
 go 1.17
 
