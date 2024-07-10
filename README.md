@@ -16,6 +16,11 @@ To install (run from translationator root directory):
 go install translationator
 ```
 
+To install from GitHub:
+```shell
+go install github.com/hyperschwartz/translationator/cmd/translationator@{latestRelease}
+```
+
 ## Running the dang thing
 
 To run the app with a JSON file in the default directory (~/translationator/translation-credentials.json), just run:
