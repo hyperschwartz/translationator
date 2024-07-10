@@ -1,8 +1,8 @@
 package main
 
 import (
-	"translationator/cmd/translationator"
-	"translationator/internal/configs"
+	"github.com/hyperschwartz/translationator/internal/configs"
+	"github.com/hyperschwartz/translationator/internal/translationator"
 )
 
 func main() {

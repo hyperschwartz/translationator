@@ -3,10 +3,10 @@ package transmodels
 import (
 	"errors"
 	"fmt"
+	"github.com/hyperschwartz/translationator/internal/helper"
+	"github.com/hyperschwartz/translationator/internal/translib/langlib"
 	"google.golang.org/api/option"
 	"strconv"
-	"translationator/internal/helper"
-	"translationator/internal/translib/langlib"
 )
 
 type TranslationateRequest struct {

@@ -3,8 +3,8 @@ package transmodels
 import (
 	"cloud.google.com/go/translate"
 	"context"
+	"github.com/hyperschwartz/translationator/internal/helper"
 	"golang.org/x/text/language"
-	"translationator/internal/helper"
 )
 
 type TranslationClientRequest struct {

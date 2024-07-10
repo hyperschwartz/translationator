@@ -4,11 +4,11 @@ import (
 	"cloud.google.com/go/translate"
 	"context"
 	"errors"
+	"github.com/hyperschwartz/translationator/internal/helper"
+	"github.com/hyperschwartz/translationator/internal/translib/langlib"
+	"github.com/hyperschwartz/translationator/internal/translib/transmodels"
 	"golang.org/x/text/language"
 	"math/rand"
-	"translationator/internal/helper"
-	"translationator/internal/translib/langlib"
-	"translationator/internal/translib/transmodels"
 )
 
 // translateTextTo takes a TranslationClientRequest and attempts to invoke the Google Translate API to translate

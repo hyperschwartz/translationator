@@ -3,13 +3,13 @@ package translationator
 import (
 	"errors"
 	"fmt"
+	"github.com/hyperschwartz/translationator/internal/helper"
+	"github.com/hyperschwartz/translationator/internal/translib/langlib"
+	"github.com/hyperschwartz/translationator/internal/translib/transclient"
+	"github.com/hyperschwartz/translationator/internal/translib/transmodels"
 	"github.com/spf13/cobra"
 	"google.golang.org/api/option"
 	"os"
-	"translationator/internal/helper"
-	"translationator/internal/translib/langlib"
-	"translationator/internal/translib/transclient"
-	"translationator/internal/translib/transmodels"
 )
 
 var defaultApiKey = "<none specified>"
